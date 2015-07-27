@@ -30,6 +30,10 @@ from dataportal.broker import DataBroker as db
 from .muxer import MuxerModel
 from .scalar import ScalarCollection
 from .persist import History
+import warnings
+# importing filestore so I can capture the IntegrityError that is sometimes 
+# raised by filestore
+import filestore
 
 with enaml.imports():
     from .replay_view import MainView
@@ -178,6 +182,12 @@ def main():
         pass
     except ValueError:
         pass
+    except filestore.handlers.IntegrityError as ie:
+        hdr = db[-1]
+        warnings.warn("Scan %s has an Integrity problem inside of filestore: %s"
+                      % (hdr.scan_id, ie))
+    except Exception as e:
+        warnings.warn("Exception encountered while trying to start replay: %s" % e)
 
     app.start()
 

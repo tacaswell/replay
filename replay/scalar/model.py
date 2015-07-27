@@ -330,9 +330,18 @@ class ScalarCollection(Atom):
                                if col_model.is_plotting]
         old_x = self.x
         old_x_is_index = self.x_is_index
-
-        scalar_cols = [col for col in self.dataframe.columns
-                     if self.dataframe[col].dropna().values[0].shape == tuple()]
+        
+        scalar_cols = []
+        for col in self.dataframe.columns:
+            col_val = self.dataframe[col].dropna().values[0] 
+            try:
+                if col_val.shape == tuple():
+                    scalar_cols.append(col)
+            except AttributeError:
+                # this is probably a UID from filestore and definitely not a scalar
+                pass
+#        print('dataframe\n%s' % self.dataframe.head())
+#        print('scalar_cols = %s' % scalar_cols)
         # figure out if the dataframe has one or more levels of labels
         # for now these need to be handled differently
         if isinstance(self.dataframe.columns[0], six.string_types):
