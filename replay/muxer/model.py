@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_events(run_header):
-    return DataBroker.fetch_events(run_header)
+    return DataBroker.fetch_events(run_header, fill=False)
 
 
 class ColumnModel(Atom):
@@ -205,7 +205,7 @@ class MuxerModel(Atom):
         self.info = 'Run {}'.format(self.header.scan_id)
         with self.suppress_notifications():
             self.data_muxer = None
-        self.event_queue = EventQueue(self.header)
+        self.event_queue = EventQueue(self.header, fill_events=False)
         self.get_new_data()
         # change the dataframe first
         self.dataframe = self.data_muxer.to_sparse_dataframe()
